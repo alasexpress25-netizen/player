@@ -94,9 +94,9 @@ jobs:
           DUR_FILMADO=$(ffprobe -v error -show_entries format=duration -of csv=p=0 in/filmado_final.mp4)
           TEXTO='${{ steps.job.outputs.texto_overlay }}'
 
-          # PIP de publicidad: esquina inferior IZQUIERDA, con margen desde
-          # abajo equivalente a ~2 líneas de texto (en vez de pegado al borde).
-          FILTER="[1:v]scale=iw*0.30:-2[pip];[0:v][pip]overlay=24:H-h-70:shortest=1[base]"
+          # PIP de publicidad: esquina inferior IZQUIERDA, 40% del ancho,
+          # con margen desde abajo equivalente a ~2 líneas de texto.
+          FILTER="[1:v]scale=iw*0.40:-2[pip];[0:v][pip]overlay=24:H-h-70:shortest=1[base]"
           if [ -n "$TEXTO" ] && [ "$TEXTO" != "null" ]; then
             # Título arriba y centrado horizontalmente.
             FILTER="${FILTER};[base]drawtext=text='${TEXTO}':fontsize=28:fontcolor=white:borderw=2:bordercolor=black:x=(w-text_w)/2:y=24[outv]"
