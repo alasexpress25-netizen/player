@@ -95,7 +95,7 @@ jobs:
 
           FILTER="[1:v]scale=iw*0.30:-2[pip];[0:v][pip]overlay=W-w-24:H-h-24:shortest=1[base]"
           if [ -n "$TEXTO" ] && [ "$TEXTO" != "null" ]; then
-            FILTER="${FILTER}[base];[base]drawtext=text='${TEXTO}':fontsize=28:fontcolor=white:borderw=2:bordercolor=black:x=24:y=H-th-24[outv]"
+            FILTER="${FILTER};[base]drawtext=text='${TEXTO}':fontsize=28:fontcolor=white:borderw=2:bordercolor=black:x=24:y=H-th-24[outv]"
           else
             FILTER="${FILTER};[base]null[outv]"
           fi
