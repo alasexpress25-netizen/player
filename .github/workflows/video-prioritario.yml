@@ -110,7 +110,7 @@ jobs:
           ffmpeg -y -f concat -safe 0 -i list.txt -c:v libx264 -c:a aac -r 30 ../fondo_final.mp4
           cd ../..
 
-      - name: Componer video final (canvas fijo 16:9 + filmado full-screen + PIP publicidad 30% esq. inf. izq. + audio mezclado, loop de fondo hasta cubrir duración)
+      - name: Componer video final (canvas fijo 16:9 + filmado full-screen + PIP publicidad 20% esq. inf. izq. + audio mezclado, loop de fondo hasta cubrir duración)
         run: |
           DUR_FILMADO=$(ffprobe -v error -show_entries format=duration -of csv=p=0 in/filmado_final.mp4)
           TEXTO='${{ steps.job.outputs.texto_overlay }}'
@@ -138,7 +138,7 @@ jobs:
           #    (no del video filmado) y se pega en la esquina inferior
           #    izquierda, con margen para las 2 líneas del ticker.
           FILTER="[0:v]scale=${CANVAS_W}:${CANVAS_H}:force_original_aspect_ratio=decrease,pad=${CANVAS_W}:${CANVAS_H}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1[base0]"
-          FILTER="${FILTER};[1:v]scale=${CANVAS_W}*0.30:-2[pip]"
+          FILTER="${FILTER};[1:v]scale=${CANVAS_W}*0.20:-2[pip]"
           FILTER="${FILTER};[base0][pip]overlay=24:H-h-70:shortest=1[base]"
           if [ -n "$TEXTO" ] && [ "$TEXTO" != "null" ]; then
             # Título arriba y centrado horizontalmente.
