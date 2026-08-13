@@ -81,18 +81,26 @@ jobs:
           # rotate/display-matrix que graba el celular) y se vuelve a
           # codificar SIN esa metadata. Así todos los clips quedan con los
           # píxeles ya "derechos" antes de concatenar, y ningún paso
-          # posterior (concat -c copy, overlay, encode final) puede volver
-          # a reinterpretar/duplicar la rotación — que es lo que causaba
-          # que los videos verticales (9:16) salieran dados vuelta 180°.
+          # posterior (concat, overlay, encode final) puede volver a
+          # reinterpretar/duplicar la rotación — que es lo que causaba que
+          # los videos verticales (9:16) salieran dados vuelta 180°.
+          #
+          # Preset "ultrafast" acá: este archivo es solo intermedio (se
+          # vuelve a comprimir en el paso de composición final), así que no
+          # hace falta gastar tiempo de CPU en calidad todavía.
           i=0
           for f in clip_*.mp4; do
             i=$((i+1))
             ffmpeg -y -i "$f" -map_metadata -1 \
-              -c:v libx264 -preset veryfast -crf 18 -c:a aac \
+              -c:v libx264 -preset ultrafast -crf 18 -c:a aac \
               "norm_$(printf %03d $i).mp4"
           done
           for f in norm_*.mp4; do echo "file '$f'"; done > list.txt
-          ffmpeg -y -f concat -safe 0 -i list.txt -c:v libx264 -preset veryfast -crf 20 -c:a aac ../filmado_final.mp4
+          # -c copy acá es seguro: todos los "norm_*.mp4" salieron del
+          # mismo comando ffmpeg de arriba, con el mismo códec/parámetros
+          # y sin metadata de rotación — no hay nada que un copy pueda
+          # volver a mezclar mal.
+          ffmpeg -y -f concat -safe 0 -i list.txt -c copy ../filmado_final.mp4
           cd ../..
 
       - name: Concatenar fondo de publicidad (en el orden de la playlist)
