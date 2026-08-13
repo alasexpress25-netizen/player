@@ -134,7 +134,7 @@ jobs:
           # 1) El filmado se escala completo (sin recortar ni deformar)
           #    para que entre en el lienzo fijo, y lo que sobra se rellena
           #    con negro (letterbox/pillarbox según corresponda).
-          # 2) La publicidad (fondo) se escala al 40% del ANCHO DEL LIENZO
+          # 2) La publicidad (fondo) se escala al 30% del ANCHO DEL LIENZO
           #    (no del video filmado) y se pega en la esquina inferior
           #    izquierda, con margen para las 2 líneas del ticker.
           FILTER="[0:v]scale=${CANVAS_W}:${CANVAS_H}:force_original_aspect_ratio=decrease,pad=${CANVAS_W}:${CANVAS_H}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1[base0]"
@@ -182,6 +182,25 @@ jobs:
             -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
             -H "Content-Type: application/json" \
             -d "{\"estado\":\"listo\",\"video_final_url\":\"${{ steps.upload.outputs.video_final_url }}\"}"
+
+      - name: Borrar clips filmados originales de R2 (ya quedaron quemados en el video final)
+        if: success()
+        continue-on-error: true
+        run: |
+          # Solo se borran los archivos que vinieron en "archivos_filmados"
+          # del job (los que se subieron para ESTA composición puntual).
+          # Los videos de la playlist de fondo (bg_*.mp4) NO se tocan —
+          # esos siguen siendo parte de la publicidad normal y se usan en
+          # otros lados. "continue-on-error" para que si algún borrado
+          # falla (ej. el archivo ya no existe), no tumbe el job que ya
+          # quedó marcado "listo" con el video compuesto disponible.
+          while read -r url; do
+            [ -z "$url" ] && continue
+            KEY="${url#$R2_PUBLIC_URL/}"
+            echo "Borrando de R2: $KEY"
+            aws s3 rm "s3://$R2_BUCKET/$KEY" --endpoint-url "$R2_ENDPOINT" \
+              || echo "  (no se pudo borrar, sigo con el resto)"
+          done < filmados.txt
 
       - name: Marcar job como error (si algo falló antes)
         if: failure()
