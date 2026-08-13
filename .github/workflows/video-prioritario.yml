@@ -14,6 +14,7 @@ env:
   R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
   R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
   R2_BUCKET: ${{ secrets.R2_BUCKET }}
+  R2_PUBLIC_URL: https://pub-3ab10f6dc3824f49ad88f57637b8d1e7.r2.dev
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
 jobs:
@@ -113,8 +114,8 @@ jobs:
         id: upload
         run: |
           NOMBRE="COMPUESTO_$(date +%Y-%m-%d_%H%M%S).mp4"
-          aws s3 cp out_compuesto.mp4 "s3://$R2_BUCKET/$NOMBRE" --endpoint-url "$R2_ENDPOINT"
-          URL="https://$(echo $R2_ENDPOINT | sed 's|https://||')/$R2_BUCKET/$NOMBRE"
+          aws s3 cp out_compuesto.mp4 "s3://$R2_BUCKET/videos/$NOMBRE" --endpoint-url "$R2_ENDPOINT"
+          URL="$R2_PUBLIC_URL/videos/$NOMBRE"
           echo "video_final_url=$URL" >> "$GITHUB_OUTPUT"
 
       - name: Marcar job como listo
