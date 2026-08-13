@@ -24,7 +24,11 @@ jobs:
       - name: Instalar FFmpeg y AWS CLI
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg awscli
+          sudo apt-get install -y -qq ffmpeg unzip curl
+          curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip -q awscliv2.zip
+          sudo ./aws/install
+          aws --version
 
       - name: Configurar credenciales R2 (S3-compatible)
         run: |
