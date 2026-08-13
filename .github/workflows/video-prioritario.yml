@@ -45,7 +45,7 @@ jobs:
           echo "$RESP" | jq -c '.[0]' > job.json
           echo "playlist_fondo_id=$(jq -r '.playlist_fondo_id' job.json)" >> "$GITHUB_OUTPUT"
           echo "texto_overlay=$(jq -r '.texto_overlay // ""' job.json)" >> "$GITHUB_OUTPUT"
-          jq -r '.archivos_filmados[]' job.json > filmados.txt
+          jq -r '.archivos_filmados[] | (if type=="object" then .url else . end)' job.json > filmados.txt
           cat filmados.txt
 
       - name: Leer playlist_items de la playlist de fondo (en orden)
