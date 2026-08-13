@@ -110,7 +110,7 @@ jobs:
           ffmpeg -y -f concat -safe 0 -i list.txt -c:v libx264 -c:a aac -r 30 ../fondo_final.mp4
           cd ../..
 
-      - name: Componer video final (canvas fijo 16:9 + filmado full-screen + PIP publicidad 40% esq. inf. izq. + audio mezclado, loop de fondo hasta cubrir duración)
+      - name: Componer video final (canvas fijo 16:9 + filmado full-screen + PIP publicidad 30% esq. inf. izq. + audio mezclado, loop de fondo hasta cubrir duración)
         run: |
           DUR_FILMADO=$(ffprobe -v error -show_entries format=duration -of csv=p=0 in/filmado_final.mp4)
           TEXTO='${{ steps.job.outputs.texto_overlay }}'
